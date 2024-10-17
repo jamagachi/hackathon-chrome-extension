@@ -1,0 +1,10 @@
+body {
+  width: 300px;
+  height: 400px;
+  margin: 0;
+  padding: 10px;
+  overflow: hidden;
+}
+h2 {
+  font-size: 18px;
+}

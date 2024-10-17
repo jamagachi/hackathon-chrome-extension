@@ -1,11 +1,47 @@
-// Initialize the visitedURL variable (for demonstration purposes)
-let visitedURL = 'https://www.google.com/';
+console.log('Background script is running'); // Debug log
+let trackedSites = {};
 
-// Listen for messages from popup.js
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'getVisitedURL') {
-    // Send back the visitedURL variable as the response
-    sendResponse({ visitedURL: visitedURL });
+// load tracked sites
+chrome.storage.sync.get(['trackedSites'], (result) => {
+  trackedSites = result.trackedSites || {};
+});
+
+// save tracked sites to storage
+function saveTrackedSites() {
+  chrome.storage.sync.set({ trackedSites }, () => {
+    console.log('Tracked sites saved:', trackedSites); // Debug log
+  });
+}
+
+// adding/removing sites:
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  const { action, domain } = message;
+
+  if (action === 'addSite') {
+    // console log to check if the site is being added
+    console.log('Adding site:', domain); 
+    if (!trackedSites[domain]) {
+      trackedSites[domain] = 1;
+    } else {
+      trackedSites[domain] += 1;
+    }
+    saveTrackedSites();
+    // sends response back to the popup.js
+    sendResponse({ success: true }); 
+  } else if (action === 'removeSite') {
+    delete trackedSites[domain];
+    saveTrackedSites();
+  }
+});
+
+// track number of visits
+chrome.webNavigation.onCompleted.addListener((details) => {
+  const url = new URL(details.url);
+  const domain = url.hostname;
+
+  if (trackedSites[domain]) {
+    trackedSites[domain] += 1;
+    saveTrackedSites(); // Save updated count
   }
 });
 
