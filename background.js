@@ -1,8 +1,10 @@
-console.log('Background script is running'); // Debug log
+// testing if background script is even working
+console.log('Background.js is running');
 let trackedSites = {};
 
-// load tracked sites
+// get tracked sites
 chrome.storage.sync.get(['trackedSites'], (result) => {
+  //
   trackedSites = result.trackedSites || {};
 });
 
@@ -15,22 +17,23 @@ function saveTrackedSites() {
 
 // adding/removing sites:
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  const { action, domain } = message;
+  const { button, siteName } = message;
 
-  if (action === 'addSite') {
+  if (button === 'addSite') {
     // console log to check if the site is being added
-    console.log('Adding site:', domain); 
-    if (!trackedSites[domain]) {
-      trackedSites[domain] = 1;
+    console.log('Adding site:', siteName);
+    if (!trackedSites[siteName]) {
+      trackedSites[siteName] = 1;
     } else {
-      trackedSites[domain] += 1;
+      trackedSites[siteName] += 1;
     }
     saveTrackedSites();
     // sends response back to the popup.js
-    sendResponse({ success: true }); 
-  } else if (action === 'removeSite') {
-    delete trackedSites[domain];
+    sendResponse({ success: true });
+  } else if (button === 'removeSite') {
+    delete trackedSites[siteName];
     saveTrackedSites();
+    sendResponse({ success: true });
   }
 });
 
@@ -41,7 +44,10 @@ chrome.webNavigation.onCompleted.addListener((details) => {
 
   if (trackedSites[domain]) {
     trackedSites[domain] += 1;
-    saveTrackedSites(); // Save updated count
+    // save updated count
+    saveTrackedSites();
+    // test console log
+    console.log(`Updated count for ${domain} : ${trackedSites[domain]}`);
   }
 });
 
