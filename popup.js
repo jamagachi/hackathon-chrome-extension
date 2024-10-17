@@ -1,5 +1,3 @@
-console.log('Hi');
-
 // Send a message to background.js to request data
 chrome.runtime.sendMessage({ action: 'getVisitedURL' }, (response) => {
   // Log the response from background.js
