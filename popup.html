@@ -4,12 +4,30 @@
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
-    <h2>Limit Your Sites</h2>
+    <div class="welcome">
+      <h1>Welcome To HabitSwitch!</h1>
+    </div>
+    <p class="welcome-message">Ready to transform your screen time?</p>
+    <p>Let's switch to healthier, more productive websites!</p>
+    <img src="badBrain.png" alt="bad-brain" id="bad-brain-img" />
+    <h2>Bad Habits</h2>
     <button id="add-site">Add Current Website</button>
     <button id="remove-site">Remove Current Website</button>
 
-    <h3>Your Tracked Sites</h3>
+    <h3>Bad Habit Tracker</h3>
     <div id="visited-url-display"></div>
+    <div id="counters"></div>
+
+    <img src="healthyBrain.png" alt="healthy-brain" id="healthy-brain-img" />
+    <h2>Healthy Habits</h2>
+    <button id="add-site">Add Current Website</button>
+    <button id="remove-site">Remove Current Website</button>
+
+    <h3>Healthy Habit Tracker</h3>
+    <div id="visited-url-display">
+      www.masterclass.com: 42 <br />
+      www.duolingo.com: 36 <br />www.stackoverflow.com: 119
+    </div>
     <div id="counters"></div>
 
     <script type="module" src="popup.js"></script>
