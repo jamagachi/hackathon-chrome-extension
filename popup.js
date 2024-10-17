@@ -1,28 +1,58 @@
-// Send a message to background.js to request data
-chrome.runtime.sendMessage({ action: 'getVisitedURL' }, (response) => {
-  // Log the response from background.js
-  console.log('Visited URL:', response.visitedURL);
+const addSiteButton = document.getElementById('add-site');
+const removeSiteButton = document.getElementById('remove-site');
+const visitedSiteDisplay = document.getElementById('visited-url-display');
 
-  // Display the visited URL in the popup (assuming an element with id "visited-url-display")
-  document.getElementById(
-    'visited-url-display'
-  ).textContent = `Visited: ${response.visitedURL}`;
+// load the tracked sites from the background.js script
+chrome.storage.sync.get(['trackedSites'], (result) => {
+  const trackedSites = result.trackedSites || {};
+  updateDisplay(trackedSites);
 });
 
-// document.addEventListener('DOMContentLoaded', () => {
-//   // Text input to add new site:
-//   const siteInputBar = document.getElementById('site-input');
-//   // Button to add current site:
-//   const addSiteButton = document.getElementById('add-site');
+// function to update the tracked sites display:
+function updateDisplay(trackedSites) {
+  visitedSiteDisplay.innerHTML = '';
+  for (const [domain, count] of Object.entries(trackedSites)) {
+    const siteElement = document.createElement('div');
+    siteElement.textContent = `${domain}: ${count}`;
+    visitedSiteDisplay.appendChild(siteElement);
+  }
+}
 
-//   siteInputBar.addEventListener('keypress', function (e) {
-//     if (e.key === 'Enter') {
-//       // Add the site inputted to siteInputBar to list of tracked sites
-//     }
-//   });
+// button toadd the current website
+addSiteButton.addEventListener('click', async () => {
+  // console log to check if button works
+  console.log('Button Clicked');
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const url = new URL(tab.url);
+  const siteName = url.hostname;
 
-//   // When the user clicks the button to add the current site:
-//   addSiteButton.addEventListener('click', () => {
-//     // Add the current website to list of tracked sites
-//   });
-// });
+  chrome.runtime.sendMessage({ button: 'addSite', siteName }, (response) => {
+    if (response.success) {
+      // reload the tracked sites, updates display for the user
+      chrome.storage.sync.get(['trackedSites'], (result) => {
+        const trackedSites = result.trackedSites || {};
+        updateDisplay(trackedSites);
+      });
+      // console log to check:
+    }
+  });
+});
+
+// when the user presses the remove site button:
+removeSiteButton.addEventListener('click', async () => {
+  //
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const url = new URL(tab.url);
+  const siteName = url.hostname;
+
+  chrome.runtime.sendMessage({ button: 'removeSite', siteName }, (response) => {
+    if (response.success) {
+      // reload the tracked sites, updates display for the user
+      chrome.storage.sync.get(['trackedSites'], (result) => {
+        const trackedSites = result.trackedSites || {};
+        updateDisplay(trackedSites);
+      });
+      // console log::
+    }
+  });
+});
