@@ -1,10 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "Healthy Web Habits",
+  "name": "Habit Switch",
   "version": "1.0",
   "description": "Limits visits to distracting websites and encourages healthier alternatives.",
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": "hs_icon.png"
   },
   "permissions": ["storage", "activeTab", "scripting", "tabs"],
   "background": {
